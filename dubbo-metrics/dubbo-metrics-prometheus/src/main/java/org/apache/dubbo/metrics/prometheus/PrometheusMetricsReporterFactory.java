@@ -67,6 +67,9 @@ public class PrometheusMetricsReporterFactory extends AbstractMetricsReporterFac
                 logger.error(INTERNAL_ERROR, "", "", "Failed to instantiate PrometheusMetricsReporter", ncde);
                 throw ncde;
             }
+        } catch (IllegalStateException ise) {
+            logger.error(INTERNAL_ERROR, "", "", "Failed to initialize PrometheusMetricsReporter", ise);
+            return new NopPrometheusMetricsReporter();
         }
     }
 
