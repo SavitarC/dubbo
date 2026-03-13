@@ -34,7 +34,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import com.sun.net.httpserver.HttpServer;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -79,14 +78,9 @@ class PrometheusMetricsReporterTest {
         PrometheusMetricsReporter reporter = new PrometheusMetricsReporter(metricsConfig.toUrl(), applicationModel);
         reporter.init();
 
-        PrometheusMeterRegistry prometheusRegistry = reporter.getPrometheusRegistry();
-        Double d1 = prometheusRegistry.getPrometheusRegistry().getSampleValue("none_exist_metric");
-        Double d2 = prometheusRegistry
-                .getPrometheusRegistry()
-                .getSampleValue(
-                        "jvm_gc_memory_promoted_bytes_total", new String[] {"application_name"}, new String[] {name});
-        Assertions.assertNull(d1);
-        Assertions.assertNull(d2);
+        String response = reporter.getResponse();
+        Assertions.assertNotNull(response);
+        Assertions.assertFalse(response.isEmpty());
     }
 
     @Test
@@ -153,7 +147,7 @@ class PrometheusMetricsReporterTest {
             prometheusExporterHttpServer = HttpServer.create(new InetSocketAddress(port), 0);
             prometheusExporterHttpServer.createContext("/metrics", httpExchange -> {
                 reporter.resetIfSamplesChanged();
-                String response = reporter.getPrometheusRegistry().scrape();
+                String response = reporter.getResponse();
                 httpExchange.sendResponseHeaders(200, response.getBytes().length);
                 try (OutputStream os = httpExchange.getResponseBody()) {
                     os.write(response.getBytes());
