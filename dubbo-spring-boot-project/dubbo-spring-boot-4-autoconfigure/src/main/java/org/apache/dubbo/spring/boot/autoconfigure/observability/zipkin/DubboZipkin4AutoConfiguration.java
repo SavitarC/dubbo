@@ -16,12 +16,12 @@
  */
 package org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin;
 
-import org.apache.dubbo.spring.boot.autoconfigure.SpringBootBefore4Condition;
+import org.apache.dubbo.spring.boot.autoconfigure.SpringBoot4Condition;
 import org.apache.dubbo.spring.boot.autoconfigure.observability.annotation.ConditionalOnDubboTracingEnable;
-import org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.ZipkinConfigurations.BraveConfiguration;
-import org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.ZipkinConfigurations.OpenTelemetryConfiguration;
-import org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.ZipkinConfigurations.ReporterConfiguration;
-import org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.ZipkinConfigurations.SenderConfiguration;
+import org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.Zipkin4Configurations.BraveConfiguration;
+import org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.Zipkin4Configurations.OpenTelemetryConfiguration;
+import org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.Zipkin4Configurations.ReporterConfiguration;
+import org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.Zipkin4Configurations.SenderConfiguration;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,18 +40,14 @@ import static org.apache.dubbo.spring.boot.autoconfigure.observability.Observabi
 import static org.apache.dubbo.spring.boot.util.DubboUtils.DUBBO_PREFIX;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Zipkin.
- * <p>
- * It uses imports on {@link ZipkinConfigurations} to guarantee the correct configuration ordering.
- * Create Zipkin sender and exporter when you are using Boot < 3.0 or you are not using spring-boot-starter-actuator.
- * When you use SpringBoot 3.*, priority should be given to loading S3 related configurations. Dubbo related zipkin configurations are invalid.
+ * {@link EnableAutoConfiguration Auto-configuration} for Zipkin on Spring Boot 4.
  *
- * @since 3.2.1
+ * @since 3.3.7
  */
 @ConditionalOnProperty(prefix = DUBBO_PREFIX, name = "enabled", matchIfMissing = true)
 @AutoConfiguration(
         afterName = {
-            "org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration",
+            "org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration",
             "org.springframework.boot.actuate.autoconfigure.tracing.zipkin"
         })
 @ConditionalOnClass(Sender.class)
@@ -62,8 +58,8 @@ import static org.apache.dubbo.spring.boot.util.DubboUtils.DUBBO_PREFIX;
     OpenTelemetryConfiguration.class
 })
 @ConditionalOnDubboTracingEnable
-@Conditional(SpringBootBefore4Condition.class)
-public class ZipkinAutoConfiguration {
+@Conditional(SpringBoot4Condition.class)
+public class DubboZipkin4AutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = DUBBO_TRACING_ZIPKIN_CONFIG_PREFIX, name = "endpoint")

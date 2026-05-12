@@ -1,0 +1,2 @@
+org.apache.dubbo.spring.boot.autoconfigure.DubboTriple4AutoConfiguration
+org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.DubboZipkin4AutoConfiguration

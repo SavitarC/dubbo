@@ -14,19 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.dubbo.spring.boot.autoconfigure;
+package org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.customizer;
 
-import org.springframework.boot.SpringBootVersion;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 
-public class SpringBoot3Condition implements Condition {
+/**
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link RestTemplateBuilder} used to send spans to Zipkin on Spring Boot 4.
+ *
+ * @since 3.3.7
+ */
+@FunctionalInterface
+public interface Zipkin4RestTemplateBuilderCustomizer {
 
-    public static boolean IS_SPRING_BOOT_3 = SpringBootVersion.getVersion().charAt(0) == '3';
-
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return IS_SPRING_BOOT_3;
-    }
+    /**
+     * Customize the rest template builder.
+     *
+     * @param restTemplateBuilder the {@code RestTemplateBuilder} to customize
+     * @return the customized {@code RestTemplateBuilder}
+     */
+    RestTemplateBuilder customize(RestTemplateBuilder restTemplateBuilder);
 }

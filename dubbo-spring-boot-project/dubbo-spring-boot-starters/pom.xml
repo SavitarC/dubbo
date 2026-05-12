@@ -41,4 +41,16 @@
     <module>dubbo-observability-spring-boot-starter</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>jdk-version-ge-17</id>
+      <activation>
+        <jdk>[17,)</jdk>
+      </activation>
+      <modules>
+        <module>dubbo-spring-boot-4-starter</module>
+      </modules>
+    </profile>
+  </profiles>
+
 </project>
