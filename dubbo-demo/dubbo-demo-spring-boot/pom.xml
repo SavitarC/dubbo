@@ -97,5 +97,12 @@
         <spring-boot-maven-plugin.version>3.2.1</spring-boot-maven-plugin.version>
       </properties>
     </profile>
+    <profile>
+      <id>spring-boot-4</id>
+      <properties>
+        <spring-boot.version>${spring-boot-4.version}</spring-boot.version>
+        <spring-boot-maven-plugin.version>${spring-boot-4.version}</spring-boot-maven-plugin.version>
+      </properties>
+    </profile>
   </profiles>
 </project>

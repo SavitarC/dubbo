@@ -52,4 +52,17 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>spring-boot-4</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.dubbo</groupId>
+          <artifactId>dubbo-spring-boot-4-autoconfigure</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
 </project>

@@ -211,6 +211,322 @@ class FileTest {
     }
 
     @Test
+    void checkZipkinSpringBootStartersSupportSpringBoot4() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        List<String> zipkinStarters = new LinkedList<>();
+        zipkinStarters.add("dubbo-tracing-brave-zipkin-spring-boot-starter");
+        zipkinStarters.add("dubbo-tracing-otel-zipkin-spring-boot-starter");
+
+        for (String zipkinStarter : zipkinStarters) {
+            String pomPath = "dubbo-spring-boot-project" + File.separator + "dubbo-spring-boot-starters"
+                    + File.separator + zipkinStarter + File.separator + "pom.xml";
+            Document document = reader.read(new File(baseFile, pomPath));
+
+            Assertions.assertTrue(
+                    hasProfileDependency(
+                            document.getRootElement(), "spring-boot-4", "dubbo-spring-boot-4-autoconfigure"),
+                    zipkinStarter + " must depend on dubbo-spring-boot-4-autoconfigure for Spring Boot 4");
+            Assertions.assertFalse(
+                    hasProfileDependency(
+                            document.getRootElement(), "jdk-version-ge-17", "dubbo-spring-boot-4-autoconfigure"),
+                    zipkinStarter + " must not enable Spring Boot 4 autoconfigure only because the JDK is 17+");
+        }
+    }
+
+    @Test
+    void checkSpringBootDemosSupportSpringBoot4SmokeCompile() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        List<String> demoPomPaths = new LinkedList<>();
+        demoPomPaths.add("dubbo-demo" + File.separator + "dubbo-demo-spring-boot" + File.separator
+                + "dubbo-demo-spring-boot-servlet" + File.separator + "pom.xml");
+        demoPomPaths.add("dubbo-demo" + File.separator + "dubbo-demo-mcp-server" + File.separator + "pom.xml");
+
+        for (String demoPomPath : demoPomPaths) {
+            Document document = reader.read(new File(baseFile, demoPomPath));
+
+            Assertions.assertTrue(
+                    hasProfileDependency(
+                            document.getRootElement(), "spring-boot-4", "dubbo-spring-boot-4-autoconfigure"),
+                    demoPomPath + " must depend on dubbo-spring-boot-4-autoconfigure for Spring Boot 4 smoke compile");
+            Assertions.assertTrue(
+                    hasProfileDependency(
+                            document.getRootElement(), "spring-boot-3", "dubbo-spring-boot-3-autoconfigure"),
+                    demoPomPath + " must depend on dubbo-spring-boot-3-autoconfigure only for Spring Boot 3");
+            Assertions.assertFalse(
+                    hasProfileDependency(
+                            document.getRootElement(), "jdk-version-ge-17", "dubbo-spring-boot-3-autoconfigure"),
+                    demoPomPath + " must not enable Spring Boot 3 autoconfigure only because the JDK is 17+");
+        }
+    }
+
+    @Test
+    void checkSpringBootDependencyCheckAutoConfigurationsRegistered() throws IOException {
+        File baseFile = getBaseFile();
+        String autoConfigurationImportsPath = "dubbo-spring-boot-project" + File.separator
+                + "dubbo-spring-boot-autoconfigure" + File.separator + "src" + File.separator + "main"
+                + File.separator + "resources" + File.separator + "META-INF" + File.separator + "spring"
+                + File.separator + "org.springframework.boot.autoconfigure.AutoConfiguration.imports";
+        String springFactoriesPath = "dubbo-spring-boot-project" + File.separator + "dubbo-spring-boot-autoconfigure"
+                + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator
+                + "META-INF" + File.separator + "spring.factories";
+
+        String[] dependencyCheckAutoConfigurations = {
+            "org.apache.dubbo.spring.boot.autoconfigure.DubboSpringBoot3DependencyCheckAutoConfiguration",
+            "org.apache.dubbo.spring.boot.autoconfigure.DubboSpringBoot4DependencyCheckAutoConfiguration"
+        };
+        for (String autoConfiguration : dependencyCheckAutoConfigurations) {
+            Assertions.assertTrue(
+                    hasResourceEntry(baseFile, autoConfigurationImportsPath, autoConfiguration),
+                    autoConfiguration + " must be registered in AutoConfiguration.imports");
+            Assertions.assertTrue(
+                    hasResourceEntry(baseFile, springFactoriesPath, autoConfiguration),
+                    autoConfiguration + " must be registered in spring.factories");
+        }
+    }
+
+    @Test
+    void checkSpringBoot4AutoConfigurationResources() throws IOException {
+        File baseFile = getBaseFile();
+        String autoConfigurationImportsPath = "dubbo-spring-boot-project" + File.separator
+                + "dubbo-spring-boot-4-autoconfigure" + File.separator + "src" + File.separator + "main"
+                + File.separator + "resources" + File.separator + "META-INF" + File.separator + "spring"
+                + File.separator + "org.springframework.boot.autoconfigure.AutoConfiguration.imports";
+        String springFactoriesPath = "dubbo-spring-boot-project" + File.separator + "dubbo-spring-boot-4-autoconfigure"
+                + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator
+                + "META-INF" + File.separator + "spring.factories";
+
+        String[] springBoot4AutoConfigurations = {
+            "org.apache.dubbo.spring.boot.autoconfigure.DubboTriple4AutoConfiguration",
+            "org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.DubboZipkin4AutoConfiguration"
+        };
+        for (String autoConfiguration : springBoot4AutoConfigurations) {
+            Assertions.assertTrue(
+                    hasResourceEntry(baseFile, autoConfigurationImportsPath, autoConfiguration),
+                    autoConfiguration + " must be registered in AutoConfiguration.imports");
+            Assertions.assertTrue(
+                    hasResourceEntry(baseFile, springFactoriesPath, autoConfiguration),
+                    autoConfiguration + " must be registered in spring.factories");
+        }
+    }
+
+    @Test
+    void checkSpringBoot4StarterDependsOnAutoConfigurations() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String springBoot4StarterPath = "dubbo-spring-boot-project" + File.separator + "dubbo-spring-boot-starters"
+                + File.separator + "dubbo-spring-boot-4-starter" + File.separator + "pom.xml";
+        Element rootElement =
+                reader.read(new File(baseFile, springBoot4StarterPath)).getRootElement();
+
+        Assertions.assertTrue(
+                hasDependency(rootElement, "dubbo-spring-boot-autoconfigure"),
+                "dubbo-spring-boot-4-starter must depend on dubbo-spring-boot-autoconfigure");
+        Assertions.assertTrue(
+                hasDependency(rootElement, "dubbo-spring-boot-4-autoconfigure"),
+                "dubbo-spring-boot-4-starter must depend on dubbo-spring-boot-4-autoconfigure");
+    }
+
+    @Test
+    void checkDubboDependenciesAllSupportSpringBoot4() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String dubboDependenciesAllPath =
+                "dubbo-test" + File.separator + "dubbo-dependencies-all" + File.separator + "pom.xml";
+        Element rootElement =
+                reader.read(new File(baseFile, dubboDependenciesAllPath)).getRootElement();
+
+        Assertions.assertTrue(
+                hasProfileDependency(rootElement, "jdk-version-ge-17", "dubbo-spring-boot-4-autoconfigure"),
+                "dubbo-dependencies-all must include dubbo-spring-boot-4-autoconfigure on JDK 17+");
+        Assertions.assertTrue(
+                hasProfileDependency(rootElement, "jdk-version-ge-17", "dubbo-spring-boot-4-starter"),
+                "dubbo-dependencies-all must include dubbo-spring-boot-4-starter on JDK 17+");
+    }
+
+    @Test
+    void checkRootSpringBoot4Profile() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        Element rootElement = reader.read(new File(baseFile, "pom.xml")).getRootElement();
+
+        String[] springBootArtifacts = {
+            "spring-boot",
+            "spring-boot-autoconfigure",
+            "spring-boot-starter",
+            "spring-boot-test",
+            "spring-boot-test-autoconfigure",
+            "spring-boot-starter-test",
+            "spring-boot-actuator",
+            "spring-boot-actuator-autoconfigure",
+            "spring-boot-starter-actuator",
+            "spring-boot-configuration-processor",
+            "spring-boot-starter-aop",
+            "spring-boot-starter-json",
+            "spring-boot-starter-log4j2",
+            "spring-boot-starter-logging",
+            "spring-boot-starter-tomcat",
+            "spring-boot-starter-validation",
+            "spring-boot-starter-web"
+        };
+        for (String artifactId : springBootArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement,
+                            "spring-boot-4",
+                            "org.springframework.boot",
+                            artifactId,
+                            "${spring-boot-4.version}"),
+                    "spring-boot-4 profile must manage " + artifactId + " with ${spring-boot-4.version}");
+        }
+
+        String[] tomcatArtifacts = {"tomcat-embed-core", "tomcat-embed-el", "tomcat-embed-websocket"};
+        for (String artifactId : tomcatArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement, "spring-boot-4", "org.apache.tomcat.embed", artifactId, "${tomcat.version}"),
+                    "spring-boot-4 profile must manage " + artifactId + " with ${tomcat.version}");
+        }
+    }
+
+    @Test
+    void checkSpringBootCompatibleKeepsSpringBoot1DependencyManagement() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String springBootCompatiblePath = "dubbo-spring-boot-project" + File.separator + "dubbo-spring-boot-compatible"
+                + File.separator + "pom.xml";
+        Element rootElement =
+                reader.read(new File(baseFile, springBootCompatiblePath)).getRootElement();
+
+        String[] springBoot1Artifacts = {
+            "spring-boot",
+            "spring-boot-autoconfigure",
+            "spring-boot-configuration-processor",
+            "spring-boot-starter",
+            "spring-boot-test",
+            "spring-boot-test-autoconfigure",
+            "spring-boot-actuator",
+            "spring-boot-starter-actuator",
+            "spring-boot-starter-log4j2",
+            "spring-boot-starter-tomcat",
+            "spring-boot-starter-test",
+            "spring-boot-starter-web"
+        };
+        for (String artifactId : springBoot1Artifacts) {
+            Assertions.assertTrue(
+                    hasManagedDependency(rootElement, "org.springframework.boot", artifactId, "${spring-boot.version}"),
+                    "spring-boot-compatible must manage " + artifactId + " with ${spring-boot.version}");
+        }
+
+        String[] tomcat8Artifacts = {"tomcat-embed-core", "tomcat-embed-el", "tomcat-embed-websocket"};
+        for (String artifactId : tomcat8Artifacts) {
+            Assertions.assertTrue(
+                    hasManagedDependency(
+                            rootElement, "org.apache.tomcat.embed", artifactId, "${spring-boot.tomcat.version}"),
+                    "spring-boot-compatible must manage " + artifactId + " with ${spring-boot.tomcat.version}");
+        }
+    }
+
+    @Test
+    void checkSpringBoot3AutoconfigureKeepsSpringBoot3DependencyManagement() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String springBoot3AutoconfigurePath = "dubbo-spring-boot-project" + File.separator
+                + "dubbo-spring-boot-3-autoconfigure" + File.separator + "pom.xml";
+        Element rootElement =
+                reader.read(new File(baseFile, springBoot3AutoconfigurePath)).getRootElement();
+
+        String[] springBoot3Artifacts = {
+            "spring-boot",
+            "spring-boot-autoconfigure",
+            "spring-boot-starter",
+            "spring-boot-test",
+            "spring-boot-test-autoconfigure",
+            "spring-boot-starter-test",
+            "spring-boot-actuator",
+            "spring-boot-actuator-autoconfigure",
+            "spring-boot-starter-actuator",
+            "spring-boot-configuration-processor",
+            "spring-boot-starter-aop",
+            "spring-boot-starter-json",
+            "spring-boot-starter-log4j2",
+            "spring-boot-starter-logging",
+            "spring-boot-starter-tomcat",
+            "spring-boot-starter-validation",
+            "spring-boot-starter-web"
+        };
+        for (String artifactId : springBoot3Artifacts) {
+            Assertions.assertTrue(
+                    hasManagedDependency(
+                            rootElement, "org.springframework.boot", artifactId, "${spring-boot-3.version}"),
+                    "dubbo-spring-boot-3-autoconfigure must manage " + artifactId + " with ${spring-boot-3.version}");
+        }
+        String[] tomcat10Artifacts = {"tomcat-embed-core", "tomcat-embed-el", "tomcat-embed-websocket"};
+        for (String artifactId : tomcat10Artifacts) {
+            Assertions.assertTrue(
+                    hasManagedDependency(
+                            rootElement, "org.apache.tomcat.embed", artifactId, "${spring-boot-3.tomcat.version}"),
+                    "dubbo-spring-boot-3-autoconfigure must manage " + artifactId
+                            + " with ${spring-boot-3.tomcat.version}");
+        }
+    }
+
+    @Test
+    void checkSpringBootAutoconfigureKeepsBefore4DependencyManagement() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String springBootAutoconfigurePath = "dubbo-spring-boot-project" + File.separator
+                + "dubbo-spring-boot-autoconfigure" + File.separator + "pom.xml";
+        Element rootElement =
+                reader.read(new File(baseFile, springBootAutoconfigurePath)).getRootElement();
+
+        String[] springBootBefore4Artifacts = {
+            "spring-boot",
+            "spring-boot-autoconfigure",
+            "spring-boot-starter",
+            "spring-boot-test",
+            "spring-boot-test-autoconfigure",
+            "spring-boot-starter-test",
+            "spring-boot-actuator",
+            "spring-boot-actuator-autoconfigure",
+            "spring-boot-starter-actuator",
+            "spring-boot-configuration-processor",
+            "spring-boot-starter-aop",
+            "spring-boot-starter-json",
+            "spring-boot-starter-log4j2",
+            "spring-boot-starter-logging",
+            "spring-boot-starter-tomcat",
+            "spring-boot-starter-validation",
+            "spring-boot-starter-web"
+        };
+        for (String artifactId : springBootBefore4Artifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement,
+                            "spring-boot-4",
+                            "org.springframework.boot",
+                            artifactId,
+                            "${spring-boot-2.version}"),
+                    "dubbo-spring-boot-autoconfigure must manage " + artifactId
+                            + " with ${spring-boot-2.version} under spring-boot-4");
+        }
+
+        String[] tomcatBefore4Artifacts = {"tomcat-embed-core", "tomcat-embed-el", "tomcat-embed-websocket"};
+        for (String artifactId : tomcatBefore4Artifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement,
+                            "spring-boot-4",
+                            "org.apache.tomcat.embed",
+                            artifactId,
+                            "${spring-boot-2.tomcat.version}"),
+                    "dubbo-spring-boot-autoconfigure must manage " + artifactId
+                            + " with ${spring-boot-2.tomcat.version} under spring-boot-4");
+        }
+    }
+
+    @Test
     void checkDubboAllDependencies() throws DocumentException {
         File baseFile = getBaseFile();
 
@@ -818,5 +1134,67 @@ class FileTest {
                 spis.add(path);
             }
         }
+    }
+
+    private boolean hasProfileDependency(Element rootElement, String profileId, String artifactId) {
+        Element profiles = rootElement.element("profiles");
+        if (profiles == null) {
+            return false;
+        }
+        return profiles.elements("profile").stream()
+                .filter(profile -> Objects.equals(profileId, profile.elementText("id")))
+                .map(profile -> profile.element("dependencies"))
+                .filter(Objects::nonNull)
+                .map(dependencies -> dependencies.elements("dependency"))
+                .flatMap(Collection::stream)
+                .anyMatch(dependency -> Objects.equals(artifactId, dependency.elementText("artifactId")));
+    }
+
+    private boolean hasDependency(Element rootElement, String artifactId) {
+        Element dependencies = rootElement.element("dependencies");
+        if (dependencies == null) {
+            return false;
+        }
+        return dependencies.elements("dependency").stream()
+                .anyMatch(dependency -> Objects.equals(artifactId, dependency.elementText("artifactId")));
+    }
+
+    private boolean hasManagedDependency(Element rootElement, String groupId, String artifactId, String version) {
+        Element dependencyManagement = rootElement.element("dependencyManagement");
+        if (dependencyManagement == null) {
+            return false;
+        }
+        Element dependencies = dependencyManagement.element("dependencies");
+        if (dependencies == null) {
+            return false;
+        }
+        return dependencies.elements("dependency").stream()
+                .anyMatch(dependency -> Objects.equals(groupId, dependency.elementText("groupId"))
+                        && Objects.equals(artifactId, dependency.elementText("artifactId"))
+                        && Objects.equals(version, dependency.elementText("version")));
+    }
+
+    private boolean hasProfileManagedDependency(
+            Element rootElement, String profileId, String groupId, String artifactId, String version) {
+        Element profiles = rootElement.element("profiles");
+        if (profiles == null) {
+            return false;
+        }
+        return profiles.elements("profile").stream()
+                .filter(profile -> Objects.equals(profileId, profile.elementText("id")))
+                .map(profile -> profile.element("dependencyManagement"))
+                .filter(Objects::nonNull)
+                .map(dependencyManagement -> dependencyManagement.element("dependencies"))
+                .filter(Objects::nonNull)
+                .map(dependencies -> dependencies.elements("dependency"))
+                .flatMap(Collection::stream)
+                .anyMatch(dependency -> Objects.equals(groupId, dependency.elementText("groupId"))
+                        && Objects.equals(artifactId, dependency.elementText("artifactId"))
+                        && Objects.equals(version, dependency.elementText("version")));
+    }
+
+    private boolean hasResourceEntry(File baseFile, String resourcePath, String resourceEntry) throws IOException {
+        return FileUtils.readFileToString(new File(baseFile, resourcePath), StandardCharsets.UTF_8)
+                .contains(resourceEntry);
     }
 }

@@ -16,6 +16,8 @@
  */
 package org.apache.dubbo.spring.boot.autoconfigure;
 
+import org.apache.dubbo.spring.boot.autoconfigure.observability.annotation.ConditionalOnDubboTracingEnable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,11 +37,21 @@ public class DubboSpringBoot4DependencyCheckAutoConfiguration {
 
     public static final String JAKARATA_SERVLET_FILTER = "jakarta.servlet.Filter";
 
+    public static final String ZIPKIN_SENDER = "zipkin2.reporter.Sender";
+
+    public static final String ZIPKIN_CONFIG_PREFIX = "dubbo.tracing.tracing-exporter.zipkin-config";
+
     public static final String DUBBO_TRIPLE_4_AUTOCONFIGURATION =
             "org.apache.dubbo.spring.boot.autoconfigure.DubboTriple4AutoConfiguration";
 
+    public static final String DUBBO_ZIPKIN_4_AUTOCONFIGURATION =
+            "org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin.DubboZipkin4AutoConfiguration";
+
     private static final String SPRING_BOOT_4_DEPENDENCY_CHECK_WARNING =
             "Couldn't enable servlet support for triple at SpringBoot4: Missing dubbo-spring-boot-4-autoconfigure";
+
+    private static final String SPRING_BOOT_4_ZIPKIN_DEPENDENCY_CHECK_WARNING =
+            "Couldn't enable Zipkin tracing at SpringBoot4: Missing dubbo-spring-boot-4-autoconfigure";
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(name = JAKARATA_SERVLET_FILTER)
@@ -62,6 +74,18 @@ public class DubboSpringBoot4DependencyCheckAutoConfiguration {
         @Bean
         public Object tripleWebSocketFilterDependencyCheck() {
             throw new IllegalStateException(SPRING_BOOT_4_DEPENDENCY_CHECK_WARNING);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(name = ZIPKIN_SENDER)
+    @ConditionalOnProperty(prefix = ZIPKIN_CONFIG_PREFIX, name = "endpoint")
+    @ConditionalOnDubboTracingEnable
+    @ConditionalOnMissingClass(DUBBO_ZIPKIN_4_AUTOCONFIGURATION)
+    public static class zipkinDependencyCheckConfiguration {
+        @Bean
+        public Object zipkinDependencyCheck() {
+            throw new IllegalStateException(SPRING_BOOT_4_ZIPKIN_DEPENDENCY_CHECK_WARNING);
         }
     }
 }
