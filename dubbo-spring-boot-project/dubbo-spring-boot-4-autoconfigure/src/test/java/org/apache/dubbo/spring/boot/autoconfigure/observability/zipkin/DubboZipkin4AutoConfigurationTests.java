@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -62,6 +63,18 @@ class DubboZipkin4AutoConfigurationTests {
                 .run((context) -> {
                     assertThat(context).hasSingleBean(Sender.class);
                     assertThat(context.getBean(Sender.class)).isInstanceOf(Zipkin4RestTemplateSender.class);
+                    assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
+                });
+    }
+
+    @Test
+    void shouldBackOffRestTemplateSenderWhenRestTemplateBuilderIsUnavailable() {
+        this.contextRunner
+                .withClassLoader(
+                        new FilteredClassLoader(URLConnectionSender.class, WebClient.class, RestTemplateBuilder.class))
+                .run((context) -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context).doesNotHaveBean(Sender.class);
                     assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
                 });
     }

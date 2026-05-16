@@ -79,7 +79,7 @@ class Zipkin4Configurations {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(RestTemplate.class)
+    @ConditionalOnClass({RestTemplate.class, RestTemplateBuilder.class})
     @EnableConfigurationProperties(DubboConfigurationProperties.class)
     static class RestTemplateSenderConfiguration {
 
