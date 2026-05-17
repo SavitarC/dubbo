@@ -241,6 +241,7 @@ class FileTest {
         List<String> demoPomPaths = new LinkedList<>();
         demoPomPaths.add("dubbo-demo" + File.separator + "dubbo-demo-spring-boot" + File.separator
                 + "dubbo-demo-spring-boot-servlet" + File.separator + "pom.xml");
+        demoPomPaths.add("dubbo-demo" + File.separator + "dubbo-demo-spring-boot-idl" + File.separator + "pom.xml");
         demoPomPaths.add("dubbo-demo" + File.separator + "dubbo-demo-mcp-server" + File.separator + "pom.xml");
 
         for (String demoPomPath : demoPomPaths) {
@@ -258,6 +259,131 @@ class FileTest {
                     hasProfileDependency(
                             document.getRootElement(), "jdk-version-ge-17", "dubbo-spring-boot-3-autoconfigure"),
                     demoPomPath + " must not enable Spring Boot 3 autoconfigure only because the JDK is 17+");
+        }
+    }
+
+    @Test
+    void checkSpringBootIdlDemoUsesRequestedSpringBootProfiles() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String demoPomPath = "dubbo-demo" + File.separator + "dubbo-demo-spring-boot-idl" + File.separator + "pom.xml";
+        Element rootElement = reader.read(new File(baseFile, demoPomPath)).getRootElement();
+
+        Assertions.assertTrue(
+                hasProfileProperty(rootElement, "spring-boot-3", "spring-boot.version", "${spring-boot-3.version}"),
+                demoPomPath + " must use ${spring-boot-3.version} under spring-boot-3");
+        Assertions.assertTrue(
+                hasProfileProperty(rootElement, "spring-boot-4", "spring-boot.version", "${spring-boot-4.version}"),
+                demoPomPath + " must use ${spring-boot-4.version} under spring-boot-4");
+    }
+
+    @Test
+    void checkSpringBootDemoUsesRequestedSpringBootProfiles() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String demoPomPath = "dubbo-demo" + File.separator + "dubbo-demo-spring-boot" + File.separator + "pom.xml";
+        Element rootElement = reader.read(new File(baseFile, demoPomPath)).getRootElement();
+
+        Assertions.assertTrue(
+                hasProfileProperty(rootElement, "spring-boot-3", "spring-boot.version", "${spring-boot-3.version}"),
+                demoPomPath + " must use ${spring-boot-3.version} under spring-boot-3");
+        Assertions.assertTrue(
+                hasProfileProperty(
+                        rootElement, "spring-boot-3", "spring-boot-maven-plugin.version", "${spring-boot-3.version}"),
+                demoPomPath
+                        + " must use ${spring-boot-3.version} for the Spring Boot Maven plugin under spring-boot-3");
+        Assertions.assertTrue(
+                hasProfileProperty(rootElement, "spring-boot-4", "spring-boot.version", "${spring-boot-4.version}"),
+                demoPomPath + " must use ${spring-boot-4.version} under spring-boot-4");
+        Assertions.assertTrue(
+                hasProfileProperty(
+                        rootElement, "spring-boot-4", "spring-boot-maven-plugin.version", "${spring-boot-4.version}"),
+                demoPomPath
+                        + " must use ${spring-boot-4.version} for the Spring Boot Maven plugin under spring-boot-4");
+    }
+
+    @Test
+    void checkSpringBootMcpServerUsesRequestedSpringBootPluginProfiles() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String demoPomPath = "dubbo-demo" + File.separator + "dubbo-demo-mcp-server" + File.separator + "pom.xml";
+        Element rootElement = reader.read(new File(baseFile, demoPomPath)).getRootElement();
+
+        Assertions.assertTrue(
+                hasProfileProperty(
+                        rootElement, "spring-boot-3", "spring-boot-maven-plugin.version", "${spring-boot-3.version}"),
+                demoPomPath
+                        + " must use ${spring-boot-3.version} for the Spring Boot Maven plugin under spring-boot-3");
+        Assertions.assertTrue(
+                hasProfileProperty(
+                        rootElement, "spring-boot-4", "spring-boot-maven-plugin.version", "${spring-boot-4.version}"),
+                demoPomPath
+                        + " must use ${spring-boot-4.version} for the Spring Boot Maven plugin under spring-boot-4");
+    }
+
+    @Test
+    void checkSpringBootModulesKeepVersionedSourceProfiles() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String[][] modules = {
+            {
+                "dubbo-spring-boot-project" + File.separator + "dubbo-spring-boot" + File.separator + "pom.xml",
+                "src/spring-boot-before-4/java",
+                "src/spring-boot-4/java"
+            },
+            {
+                "dubbo-spring-boot-project" + File.separator + "dubbo-spring-boot-actuator" + File.separator
+                        + "pom.xml",
+                "src/spring-boot-before-4/java",
+                "src/spring-boot-4/java"
+            },
+            {
+                "dubbo-plugin" + File.separator + "dubbo-rest-spring" + File.separator + "pom.xml",
+                "src/spring-boot-before-4/java",
+                "src/spring-boot-4/java"
+            }
+        };
+
+        for (String[] module : modules) {
+            Element rootElement = reader.read(new File(baseFile, module[0])).getRootElement();
+            Assertions.assertTrue(
+                    hasProfileSource(rootElement, "spring-boot-before-4", module[1]),
+                    module[0] + " must keep its Spring Boot before 4 source set");
+            Assertions.assertTrue(
+                    hasProfileSource(rootElement, "spring-boot-4", module[2]),
+                    module[0] + " must keep its Spring Boot 4 source set");
+        }
+    }
+
+    @Test
+    void checkDubboConfigSpringUsesSpringBoot4Profile() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String pomPath = "dubbo-config" + File.separator + "dubbo-config-spring" + File.separator + "pom.xml";
+        Element rootElement = reader.read(new File(baseFile, pomPath)).getRootElement();
+
+        Assertions.assertTrue(
+                hasProfileProperty(rootElement, "spring-boot-4", "spring-boot.version", "${spring-boot-4.version}"),
+                pomPath + " must use ${spring-boot-4.version} under spring-boot-4");
+        Assertions.assertTrue(
+                hasProfileProperty(rootElement, "spring-boot-4", "spring-boot.tomcat.version", "${tomcat.version}"),
+                pomPath + " must use ${tomcat.version} under spring-boot-4");
+    }
+
+    @Test
+    void checkDubboBomIncludesSpringBoot4Artifacts() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String bomPath = "dubbo-distribution" + File.separator + "dubbo-bom" + File.separator + "pom.xml";
+        Element rootElement = reader.read(new File(baseFile, bomPath)).getRootElement();
+        String[] artifactIds = {
+            "dubbo-spring-boot-3-autoconfigure", "dubbo-spring-boot-4-autoconfigure", "dubbo-spring-boot-4-starter"
+        };
+
+        for (String artifactId : artifactIds) {
+            Assertions.assertTrue(
+                    hasManagedDependency(rootElement, "org.apache.dubbo", artifactId, "${project.version}"),
+                    "dubbo-bom must include " + artifactId);
         }
     }
 
@@ -389,6 +515,15 @@ class FileTest {
                     "spring-boot-4 profile must manage " + artifactId + " with ${slf4j-boot-4.version}");
         }
 
+        Assertions.assertTrue(
+                hasProfileManagedDependency(
+                        rootElement,
+                        "spring-boot-4",
+                        "com.fasterxml.jackson.core",
+                        "jackson-annotations",
+                        "${jackson-annotations-boot-4.version}"),
+                "spring-boot-4 profile must manage jackson-annotations with ${jackson-annotations-boot-4.version}");
+
         String[] springBootArtifacts = {
             "spring-boot",
             "spring-boot-autoconfigure",
@@ -402,6 +537,9 @@ class FileTest {
             "spring-boot-health",
             "spring-boot-micrometer-metrics",
             "spring-boot-configuration-processor",
+            "spring-boot-http-client",
+            "spring-boot-http-converter",
+            "spring-boot-jackson",
             "spring-boot-restclient",
             "spring-boot-starter-aop",
             "spring-boot-starter-json",
@@ -456,6 +594,51 @@ class FileTest {
                     hasProfileManagedDependency(
                             rootElement, "spring-boot-4", "org.apache.tomcat.embed", artifactId, "${tomcat.version}"),
                     "spring-boot-4 profile must manage " + artifactId + " with ${tomcat.version}");
+        }
+    }
+
+    @Test
+    void checkRootSpringBoot3Profile() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        Element rootElement = reader.read(new File(baseFile, "pom.xml")).getRootElement();
+
+        String[] springBootArtifacts = {
+            "spring-boot",
+            "spring-boot-autoconfigure",
+            "spring-boot-starter",
+            "spring-boot-test",
+            "spring-boot-test-autoconfigure",
+            "spring-boot-starter-test",
+            "spring-boot-actuator",
+            "spring-boot-actuator-autoconfigure",
+            "spring-boot-starter-actuator",
+            "spring-boot-configuration-processor",
+            "spring-boot-starter-aop",
+            "spring-boot-starter-json",
+            "spring-boot-starter-log4j2",
+            "spring-boot-starter-logging",
+            "spring-boot-starter-tomcat",
+            "spring-boot-starter-validation",
+            "spring-boot-starter-web"
+        };
+        for (String artifactId : springBootArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement,
+                            "spring-boot-3",
+                            "org.springframework.boot",
+                            artifactId,
+                            "${spring-boot-3.version}"),
+                    "spring-boot-3 profile must manage " + artifactId + " with ${spring-boot-3.version}");
+        }
+
+        String[] tomcatArtifacts = {"tomcat-embed-core", "tomcat-embed-el", "tomcat-embed-websocket"};
+        for (String artifactId : tomcatArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement, "spring-boot-3", "org.apache.tomcat.embed", artifactId, "${tomcat.version}"),
+                    "spring-boot-3 profile must manage " + artifactId + " with ${tomcat.version}");
         }
     }
 
@@ -550,6 +733,62 @@ class FileTest {
         Element rootElement =
                 reader.read(new File(baseFile, springBootAutoconfigurePath)).getRootElement();
 
+        String[] profileIds = {"spring-boot-3", "spring-boot-4"};
+        String[] springBootBefore4Artifacts = {
+            "spring-boot",
+            "spring-boot-autoconfigure",
+            "spring-boot-starter",
+            "spring-boot-test",
+            "spring-boot-test-autoconfigure",
+            "spring-boot-starter-test",
+            "spring-boot-actuator",
+            "spring-boot-actuator-autoconfigure",
+            "spring-boot-starter-actuator",
+            "spring-boot-configuration-processor",
+            "spring-boot-starter-aop",
+            "spring-boot-starter-json",
+            "spring-boot-starter-log4j2",
+            "spring-boot-starter-logging",
+            "spring-boot-starter-tomcat",
+            "spring-boot-starter-validation",
+            "spring-boot-starter-web"
+        };
+        String[] tomcatBefore4Artifacts = {"tomcat-embed-core", "tomcat-embed-el", "tomcat-embed-websocket"};
+        for (String profileId : profileIds) {
+            for (String artifactId : springBootBefore4Artifacts) {
+                Assertions.assertTrue(
+                        hasProfileManagedDependency(
+                                rootElement,
+                                profileId,
+                                "org.springframework.boot",
+                                artifactId,
+                                "${spring-boot-2.version}"),
+                        "dubbo-spring-boot-autoconfigure must manage " + artifactId
+                                + " with ${spring-boot-2.version} under " + profileId);
+            }
+            for (String artifactId : tomcatBefore4Artifacts) {
+                Assertions.assertTrue(
+                        hasProfileManagedDependency(
+                                rootElement,
+                                profileId,
+                                "org.apache.tomcat.embed",
+                                artifactId,
+                                "${spring-boot-2.tomcat.version}"),
+                        "dubbo-spring-boot-autoconfigure must manage " + artifactId
+                                + " with ${spring-boot-2.tomcat.version} under " + profileId);
+            }
+        }
+    }
+
+    @Test
+    void checkSpringBootActuatorAutoconfigureKeepsBefore4DependencyManagement() throws DocumentException {
+        File baseFile = getBaseFile();
+        SAXReader reader = new SAXReader();
+        String springBootActuatorAutoconfigurePath = "dubbo-spring-boot-project" + File.separator
+                + "dubbo-spring-boot-actuator-autoconfigure" + File.separator + "pom.xml";
+        Element rootElement = reader.read(new File(baseFile, springBootActuatorAutoconfigurePath))
+                .getRootElement();
+
         String[] springBootBefore4Artifacts = {
             "spring-boot",
             "spring-boot-autoconfigure",
@@ -573,12 +812,12 @@ class FileTest {
             Assertions.assertTrue(
                     hasProfileManagedDependency(
                             rootElement,
-                            "spring-boot-4",
+                            "spring-boot-3",
                             "org.springframework.boot",
                             artifactId,
                             "${spring-boot-2.version}"),
-                    "dubbo-spring-boot-autoconfigure must manage " + artifactId
-                            + " with ${spring-boot-2.version} under spring-boot-4");
+                    "dubbo-spring-boot-actuator-autoconfigure must manage " + artifactId
+                            + " with ${spring-boot-2.version} under spring-boot-3");
         }
 
         String[] tomcatBefore4Artifacts = {"tomcat-embed-core", "tomcat-embed-el", "tomcat-embed-websocket"};
@@ -586,12 +825,12 @@ class FileTest {
             Assertions.assertTrue(
                     hasProfileManagedDependency(
                             rootElement,
-                            "spring-boot-4",
+                            "spring-boot-3",
                             "org.apache.tomcat.embed",
                             artifactId,
                             "${spring-boot-2.tomcat.version}"),
-                    "dubbo-spring-boot-autoconfigure must manage " + artifactId
-                            + " with ${spring-boot-2.tomcat.version} under spring-boot-4");
+                    "dubbo-spring-boot-actuator-autoconfigure must manage " + artifactId
+                            + " with ${spring-boot-2.tomcat.version} under spring-boot-3");
         }
     }
 
@@ -1217,6 +1456,44 @@ class FileTest {
                 .map(dependencies -> dependencies.elements("dependency"))
                 .flatMap(Collection::stream)
                 .anyMatch(dependency -> Objects.equals(artifactId, dependency.elementText("artifactId")));
+    }
+
+    private boolean hasProfileProperty(Element rootElement, String profileId, String propertyName, String value) {
+        Element profiles = rootElement.element("profiles");
+        if (profiles == null) {
+            return false;
+        }
+        return profiles.elements("profile").stream()
+                .filter(profile -> Objects.equals(profileId, profile.elementText("id")))
+                .map(profile -> profile.element("properties"))
+                .filter(Objects::nonNull)
+                .anyMatch(properties -> Objects.equals(value, properties.elementText(propertyName)));
+    }
+
+    private boolean hasProfileSource(Element rootElement, String profileId, String source) {
+        Element profiles = rootElement.element("profiles");
+        if (profiles == null) {
+            return false;
+        }
+        return profiles.elements("profile").stream()
+                .filter(profile -> Objects.equals(profileId, profile.elementText("id")))
+                .map(profile -> profile.element("build"))
+                .filter(Objects::nonNull)
+                .map(build -> build.element("plugins"))
+                .filter(Objects::nonNull)
+                .map(plugins -> plugins.elements("plugin"))
+                .flatMap(Collection::stream)
+                .map(plugin -> plugin.element("executions"))
+                .filter(Objects::nonNull)
+                .map(executions -> executions.elements("execution"))
+                .flatMap(Collection::stream)
+                .map(execution -> execution.element("configuration"))
+                .filter(Objects::nonNull)
+                .map(configuration -> configuration.element("sources"))
+                .filter(Objects::nonNull)
+                .map(sources -> sources.elements("source"))
+                .flatMap(Collection::stream)
+                .anyMatch(sourceElement -> Objects.equals(source, sourceElement.getTextTrim()));
     }
 
     private boolean hasDependency(Element rootElement, String artifactId) {

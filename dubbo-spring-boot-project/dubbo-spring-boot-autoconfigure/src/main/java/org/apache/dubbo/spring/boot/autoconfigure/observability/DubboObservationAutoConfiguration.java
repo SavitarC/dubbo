@@ -58,11 +58,20 @@ import static org.apache.dubbo.spring.boot.util.DubboUtils.DUBBO_PREFIX;
 @ConditionalOnProperty(prefix = DUBBO_PREFIX, name = "enabled", matchIfMissing = true)
 @AutoConfiguration(
         after = DubboMicrometerTracingAutoConfiguration.class,
-        afterName = "org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration")
+        afterName = {
+            "org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration",
+            "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration"
+        })
 @ConditionalOnDubboTracingEnable
 @ConditionalOnClass(name = {"io.micrometer.observation.Observation", "io.micrometer.tracing.Tracer"})
 public class DubboObservationAutoConfiguration
         implements BeanFactoryAware, ApplicationListener<DubboConfigInitEvent>, Ordered {
+    private static final String BOOT3_OBSERVATION_REGISTRY_POST_PROCESSOR =
+            "org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryPostProcessor";
+
+    private static final String BOOT4_OBSERVATION_REGISTRY_POST_PROCESSOR =
+            "org.springframework.boot.micrometer.observation.autoconfigure.ObservationRegistryPostProcessor";
+
     private final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(QosProtocolWrapper.class);
 
     public DubboObservationAutoConfiguration(ApplicationModel applicationModel) {
@@ -82,7 +91,7 @@ public class DubboObservationAutoConfiguration
 
     @Bean
     @ConditionalOnMissingBean(
-            type = "org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryPostProcessor")
+            type = {BOOT3_OBSERVATION_REGISTRY_POST_PROCESSOR, BOOT4_OBSERVATION_REGISTRY_POST_PROCESSOR})
     @ConditionalOnClass(name = "io.micrometer.observation.ObservationHandler")
     public ObservationRegistryPostProcessor dubboObservationRegistryPostProcessor(
             ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping,
@@ -119,7 +128,7 @@ public class DubboObservationAutoConfiguration
     @ConditionalOnClass(MeterRegistry.class)
     @ConditionalOnMissingClass("io.micrometer.tracing.Tracer")
     @ConditionalOnMissingBean(
-            type = "org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryPostProcessor")
+            type = {BOOT3_OBSERVATION_REGISTRY_POST_PROCESSOR, BOOT4_OBSERVATION_REGISTRY_POST_PROCESSOR})
     static class OnlyMetricsConfiguration {
 
         @Bean
@@ -133,7 +142,7 @@ public class DubboObservationAutoConfiguration
     @ConditionalOnClass(io.micrometer.tracing.Tracer.class)
     @ConditionalOnMissingClass("io.micrometer.core.instrument.MeterRegistry")
     @ConditionalOnMissingBean(
-            type = "org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryPostProcessor")
+            type = {BOOT3_OBSERVATION_REGISTRY_POST_PROCESSOR, BOOT4_OBSERVATION_REGISTRY_POST_PROCESSOR})
     static class OnlyTracingConfiguration {
 
         @Bean
@@ -146,7 +155,7 @@ public class DubboObservationAutoConfiguration
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({MeterRegistry.class, io.micrometer.tracing.Tracer.class})
     @ConditionalOnMissingBean(
-            type = "org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryPostProcessor")
+            type = {BOOT3_OBSERVATION_REGISTRY_POST_PROCESSOR, BOOT4_OBSERVATION_REGISTRY_POST_PROCESSOR})
     static class MetricsWithTracingConfiguration {
 
         @Bean

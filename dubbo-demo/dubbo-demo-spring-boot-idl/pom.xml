@@ -122,4 +122,32 @@
       </extension>
     </extensions>
   </build>
+  <profiles>
+    <profile>
+      <id>spring-boot-3</id>
+      <properties>
+        <spring-boot.version>${spring-boot-3.version}</spring-boot.version>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.dubbo</groupId>
+          <artifactId>dubbo-spring-boot-3-autoconfigure</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>spring-boot-4</id>
+      <properties>
+        <spring-boot.version>${spring-boot-4.version}</spring-boot.version>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.dubbo</groupId>
+          <artifactId>dubbo-spring-boot-4-autoconfigure</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

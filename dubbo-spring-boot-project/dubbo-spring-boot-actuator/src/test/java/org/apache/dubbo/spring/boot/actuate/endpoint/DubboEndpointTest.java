@@ -17,8 +17,11 @@
 package org.apache.dubbo.spring.boot.actuate.endpoint;
 
 import org.apache.dubbo.config.bootstrap.DubboBootstrap;
+import org.apache.dubbo.rpc.model.ApplicationModel;
+import org.apache.dubbo.spring.boot.actuate.endpoint.metadata.DubboMetadata;
 import org.apache.dubbo.spring.boot.util.DubboUtils;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
@@ -28,6 +31,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.apache.dubbo.common.Version.getVersion;
@@ -43,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
-        classes = {DubboQosEndpoints.class},
+        classes = {DubboQosEndpoints.class, DubboEndpointTest.TestConfig.class},
         properties = {"dubbo.application.name = dubbo-demo-application"})
 @EnableAutoConfiguration
 class DubboEndpointTest {
@@ -79,8 +84,29 @@ class DubboEndpointTest {
 
         assertEquals("https://github.com/apache/dubbo", urls.get("dubbo"));
         assertEquals("dev@dubbo.apache.org", urls.get("mailing-list"));
-        assertEquals("https://github.com/apache/dubbo-spring-boot-project", urls.get("github"));
-        assertEquals("https://github.com/apache/dubbo-spring-boot-project/issues", urls.get("issues"));
-        assertEquals("https://github.com/apache/dubbo-spring-boot-project.git", urls.get("git"));
+        assertEquals("https://github.com/apache/dubbo/tree/3.0/dubbo-spring-boot", urls.get("github"));
+        assertEquals("https://github.com/apache/dubbo/issues", urls.get("issues"));
+        assertEquals("https://github.com/apache/dubbo.git", urls.get("git"));
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Bean
+        ApplicationModel applicationModel() {
+            return ApplicationModel.defaultModel();
+        }
+
+        @Bean
+        DubboMetadata dubboMetadata() {
+            return new DubboMetadata();
+        }
+
+        @Bean
+        DubboActuatorProperties dubboActuatorProperties() {
+            DubboActuatorProperties properties = new DubboActuatorProperties();
+            properties.setDubbo(Collections.emptyMap());
+            return properties;
+        }
     }
 }

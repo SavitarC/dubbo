@@ -16,10 +16,14 @@
  */
 package org.apache.dubbo.spring.boot.autoconfigure.observability.zipkin;
 
+import org.apache.dubbo.spring.boot.autoconfigure.SpringBoot4Condition;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.restclient.RestTemplateBuilder;
@@ -33,11 +37,14 @@ import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Call;
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.Sender;
+import zipkin2.reporter.brave.ZipkinSpanHandler;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DubboZipkin4AutoConfigurationTests {
+
+    private final boolean springBoot4 = SpringBoot4Condition.IS_SPRING_BOOT_4;
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(DubboZipkin4AutoConfiguration.class))
@@ -45,12 +52,44 @@ class DubboZipkin4AutoConfigurationTests {
                     "dubbo.tracing.enabled=true",
                     "dubbo.tracing.tracing-exporter.zipkin-config.endpoint=http://localhost:9411/api/v2/spans");
 
+    @BeforeEach
+    void enableSpringBoot4Condition() {
+        SpringBoot4Condition.IS_SPRING_BOOT_4 = true;
+    }
+
+    @AfterEach
+    void resetSpringBoot4Condition() {
+        SpringBoot4Condition.IS_SPRING_BOOT_4 = springBoot4;
+    }
+
     @Test
     void shouldSupplyZipkinBeansOnSpringBoot4() {
         this.contextRunner
                 .withUserConfiguration(NoOpReporterConfiguration.class, NoOpSenderConfiguration.class)
                 .run((context) -> {
                     assertThat(context).hasSingleBean(Sender.class);
+                    assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
+                });
+    }
+
+    @Test
+    void shouldSupplyUrlConnectionSenderByDefault() {
+        this.contextRunner.run((context) -> {
+            assertThat(context).hasSingleBean(Sender.class);
+            assertThat(context.getBean(Sender.class)).isInstanceOf(URLConnectionSender.class);
+            assertThat(context).hasSingleBean(AsyncReporter.class);
+            assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
+            assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
+        });
+    }
+
+    @Test
+    void shouldSupplyWebClientSenderWhenUrlConnectionIsUnavailable() {
+        this.contextRunner
+                .withClassLoader(new FilteredClassLoader(URLConnectionSender.class))
+                .run((context) -> {
+                    assertThat(context).hasSingleBean(Sender.class);
+                    assertThat(context.getBean(Sender.class)).isInstanceOf(ZipkinWebClientSender.class);
                     assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
                 });
     }

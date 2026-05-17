@@ -169,6 +169,7 @@
     <spring-security-6.version>6.5.10</spring-security-6.version>
     <spring-boot-3.version>3.5.14</spring-boot-3.version>
     <spring-boot-4.version>4.0.6</spring-boot-4.version>
+    <jackson-annotations-boot-4.version>2.21</jackson-annotations-boot-4.version>
     <junit-bom.version>6.0.3</junit-bom.version>
     <logback-boot-4.version>1.5.32</logback-boot-4.version>
     <slf4j-boot-4.version>2.0.17</slf4j-boot-4.version>
@@ -1233,6 +1234,11 @@
             <scope>import</scope>
           </dependency>
           <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson-annotations-boot-4.version}</version>
+          </dependency>
+          <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit-bom.version}</version>
@@ -1435,6 +1441,21 @@
           <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${spring-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-http-client</artifactId>
+            <version>${spring-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-http-converter</artifactId>
+            <version>${spring-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jackson</artifactId>
             <version>${spring-boot-4.version}</version>
           </dependency>
           <dependency>
