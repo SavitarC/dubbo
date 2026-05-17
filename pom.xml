@@ -165,9 +165,13 @@
 
     <!-- For unify spring boot 3/4 version -->
     <spring-6.version>6.2.18</spring-6.version>
+    <spring-7.version>7.0.7</spring-7.version>
     <spring-security-6.version>6.5.10</spring-security-6.version>
     <spring-boot-3.version>3.5.14</spring-boot-3.version>
     <spring-boot-4.version>4.0.6</spring-boot-4.version>
+    <junit-bom.version>6.0.3</junit-bom.version>
+    <logback-boot-4.version>1.5.32</logback-boot-4.version>
+    <slf4j-boot-4.version>2.0.17</slf4j-boot-4.version>
 
     <!-- protobuf-java_version should be same as protobuf-java_version at dubbo-dependencies-bom -->
     <protobuf-java_version>4.33.4</protobuf-java_version>
@@ -1222,6 +1226,158 @@
       <dependencyManagement>
         <dependencies>
           <dependency>
+            <groupId>org.junit</groupId>
+            <artifactId>junit-bom</artifactId>
+            <version>${junit-bom.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit-bom.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-bom.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit-bom.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-commons</artifactId>
+            <version>${junit-bom.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-engine</artifactId>
+            <version>${junit-bom.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>${junit-bom.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4j-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${slf4j-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-indexer</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core-test</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-instrument</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>${spring-7.version}</version>
+          </dependency>
+          <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
             <version>${spring-boot-4.version}</version>
@@ -1263,12 +1419,27 @@
           </dependency>
           <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-health</artifactId>
+            <version>${spring-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-micrometer-metrics</artifactId>
+            <version>${spring-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
             <version>${spring-boot-4.version}</version>
           </dependency>
           <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${spring-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-restclient</artifactId>
             <version>${spring-boot-4.version}</version>
           </dependency>
           <dependency>
@@ -1304,6 +1475,16 @@
           <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-tomcat</artifactId>
+            <version>${spring-boot-4.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-web-server</artifactId>
             <version>${spring-boot-4.version}</version>
           </dependency>
           <dependency>

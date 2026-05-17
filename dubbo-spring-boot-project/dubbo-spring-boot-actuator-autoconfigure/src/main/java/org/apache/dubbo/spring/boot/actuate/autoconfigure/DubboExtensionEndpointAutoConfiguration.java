@@ -19,9 +19,9 @@ package org.apache.dubbo.spring.boot.actuate.autoconfigure;
 import org.apache.dubbo.spring.boot.actuate.endpoint.DubboActuatorProperties;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import static org.apache.dubbo.spring.boot.util.DubboUtils.DUBBO_PREFIX;
@@ -30,7 +30,7 @@ import static org.apache.dubbo.spring.boot.util.DubboUtils.DUBBO_PREFIX;
  * Dubbo Extension Endpoints Auto-{@link Configuration}
  */
 @ConditionalOnProperty(prefix = DUBBO_PREFIX, name = "enabled", matchIfMissing = true)
-@ConditionalOnClass(name = {"org.springframework.boot.actuate.health.Health"})
+@Conditional(CompatibleHealthIndicatorCondition.class)
 @Configuration
 @AutoConfigureAfter(
         name = {"org.apache.dubbo.spring.boot.actuate.autoconfigure.DubboEndpointMetadataAutoConfiguration"})

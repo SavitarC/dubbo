@@ -41,6 +41,7 @@ import static org.apache.dubbo.spring.boot.util.DubboUtils.SPRING_APPLICATION_NA
  * {@link SpringApplication#setDefaultProperties(Properties) Spring Boot default properties} for Dubbo
  * as late as possible before {@link ConfigurableApplicationContext#refresh() application context refresh}.
  */
+@SuppressWarnings("removal")
 public class DubboDefaultPropertiesEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
     /**

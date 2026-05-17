@@ -22,15 +22,13 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import static org.apache.dubbo.spring.boot.actuate.health.DubboHealthIndicatorProperties.PREFIX;
 
 /**
- * Dubbo {@link HealthIndicator} Properties
+ * Dubbo health indicator properties.
  *
- * @see HealthIndicator
  * @since 2.7.0
  */
 @ConfigurationProperties(prefix = PREFIX, ignoreUnknownFields = false)

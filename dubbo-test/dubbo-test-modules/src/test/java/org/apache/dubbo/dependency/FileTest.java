@@ -351,6 +351,44 @@ class FileTest {
         SAXReader reader = new SAXReader();
         Element rootElement = reader.read(new File(baseFile, "pom.xml")).getRootElement();
 
+        Assertions.assertTrue(
+                hasProfileManagedDependency(
+                        rootElement, "spring-boot-4", "org.junit", "junit-bom", "${junit-bom.version}"),
+                "spring-boot-4 profile must import junit-bom with ${junit-bom.version}");
+
+        String[] junitJupiterArtifacts = {"junit-jupiter-api", "junit-jupiter-engine", "junit-jupiter-params"};
+        for (String artifactId : junitJupiterArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement, "spring-boot-4", "org.junit.jupiter", artifactId, "${junit-bom.version}"),
+                    "spring-boot-4 profile must manage " + artifactId + " with ${junit-bom.version}");
+        }
+
+        String[] junitPlatformArtifacts = {"junit-platform-commons", "junit-platform-engine", "junit-platform-launcher"
+        };
+        for (String artifactId : junitPlatformArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement, "spring-boot-4", "org.junit.platform", artifactId, "${junit-bom.version}"),
+                    "spring-boot-4 profile must manage " + artifactId + " with ${junit-bom.version}");
+        }
+
+        String[] logbackArtifacts = {"logback-classic", "logback-core"};
+        for (String artifactId : logbackArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement, "spring-boot-4", "ch.qos.logback", artifactId, "${logback-boot-4.version}"),
+                    "spring-boot-4 profile must manage " + artifactId + " with ${logback-boot-4.version}");
+        }
+
+        String[] slf4jArtifacts = {"jcl-over-slf4j", "jul-to-slf4j", "log4j-over-slf4j", "slf4j-api"};
+        for (String artifactId : slf4jArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement, "spring-boot-4", "org.slf4j", artifactId, "${slf4j-boot-4.version}"),
+                    "spring-boot-4 profile must manage " + artifactId + " with ${slf4j-boot-4.version}");
+        }
+
         String[] springBootArtifacts = {
             "spring-boot",
             "spring-boot-autoconfigure",
@@ -361,14 +399,19 @@ class FileTest {
             "spring-boot-actuator",
             "spring-boot-actuator-autoconfigure",
             "spring-boot-starter-actuator",
+            "spring-boot-health",
+            "spring-boot-micrometer-metrics",
             "spring-boot-configuration-processor",
+            "spring-boot-restclient",
             "spring-boot-starter-aop",
             "spring-boot-starter-json",
             "spring-boot-starter-log4j2",
             "spring-boot-starter-logging",
             "spring-boot-starter-tomcat",
             "spring-boot-starter-validation",
-            "spring-boot-starter-web"
+            "spring-boot-starter-web",
+            "spring-boot-tomcat",
+            "spring-boot-web-server"
         };
         for (String artifactId : springBootArtifacts) {
             Assertions.assertTrue(
@@ -379,6 +422,32 @@ class FileTest {
                             artifactId,
                             "${spring-boot-4.version}"),
                     "spring-boot-4 profile must manage " + artifactId + " with ${spring-boot-4.version}");
+        }
+
+        String[] springFrameworkArtifacts = {
+            "spring-aop",
+            "spring-aspects",
+            "spring-beans",
+            "spring-context",
+            "spring-context-indexer",
+            "spring-context-support",
+            "spring-core",
+            "spring-core-test",
+            "spring-expression",
+            "spring-instrument",
+            "spring-jdbc",
+            "spring-test",
+            "spring-tx",
+            "spring-web",
+            "spring-webflux",
+            "spring-webmvc",
+            "spring-websocket"
+        };
+        for (String artifactId : springFrameworkArtifacts) {
+            Assertions.assertTrue(
+                    hasProfileManagedDependency(
+                            rootElement, "spring-boot-4", "org.springframework", artifactId, "${spring-7.version}"),
+                    "spring-boot-4 profile must manage " + artifactId + " with ${spring-7.version}");
         }
 
         String[] tomcatArtifacts = {"tomcat-embed-core", "tomcat-embed-el", "tomcat-embed-websocket"};

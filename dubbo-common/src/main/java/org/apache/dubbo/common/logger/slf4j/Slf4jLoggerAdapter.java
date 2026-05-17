@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 public class Slf4jLoggerAdapter implements LoggerAdapter {
     public static final String NAME = "slf4j";
+    private static final String NOP_LOGGER_FACTORY = "org.slf4j.helpers.NOPLoggerFactory";
 
     private Level level;
     private File file;
@@ -82,6 +83,14 @@ public class Slf4jLoggerAdapter implements LoggerAdapter {
 
     @Override
     public boolean isConfigured() {
+        try {
+            Object loggerFactory = LoggerFactory.getILoggerFactory();
+            return loggerFactory != null
+                    && !NOP_LOGGER_FACTORY.equals(loggerFactory.getClass().getName());
+        } catch (Throwable ignore) {
+            // Fallback for unusual SLF4J initialization failures.
+        }
+
         try {
             ClassUtils.forName("org.slf4j.impl.StaticLoggerBinder");
             return true;

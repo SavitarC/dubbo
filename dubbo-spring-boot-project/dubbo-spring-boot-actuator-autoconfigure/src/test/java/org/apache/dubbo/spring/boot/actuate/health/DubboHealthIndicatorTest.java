@@ -23,8 +23,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -77,8 +75,6 @@ class DubboHealthIndicatorTest {
     @Test
     void testHealth() {
 
-        Health health = dubboHealthIndicator.health();
-
-        assertEquals(Status.UNKNOWN, health.getStatus());
+        assertEquals("UNKNOWN", dubboHealthIndicator.health().getStatus().toString());
     }
 }

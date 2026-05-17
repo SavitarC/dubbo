@@ -148,7 +148,7 @@ public class DubboDeployApplicationListener
 
     @Override
     public void onApplicationEvent(ApplicationContextEvent event) {
-        if (nullSafeEquals(applicationContext, event.getSource())) {
+        if (nullSafeEquals(applicationContext, event.getApplicationContext())) {
             if (event instanceof ContextRefreshedEvent) {
                 onContextRefreshedEvent((ContextRefreshedEvent) event);
             } else if (event instanceof ContextClosedEvent) {

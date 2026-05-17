@@ -238,6 +238,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -353,10 +359,91 @@
       <id>spring-boot-4</id>
       <properties>
         <spring-boot-2.version>2.7.18</spring-boot-2.version>
+        <spring-boot-2.spring.version>5.3.31</spring-boot-2.spring.version>
         <spring-boot-2.tomcat.version>9.0.117</spring-boot-2.tomcat.version>
       </properties>
       <dependencyManagement>
         <dependencies>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-indexer</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-instrument</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>${spring-boot-2.spring.version}</version>
+          </dependency>
           <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>

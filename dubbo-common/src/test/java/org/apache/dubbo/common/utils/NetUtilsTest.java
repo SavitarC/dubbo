@@ -336,8 +336,8 @@ class NetUtilsTest {
     @Test
     void testMatchIpRangeMatchWhenIpWrongException() {
         UnknownHostException thrown = assertThrows(
-                UnknownHostException.class, () -> NetUtils.matchIpRange("192.168.1.63", "192.168.1.ff", 90));
-        assertTrue(thrown.getMessage().contains("192.168.1.ff"));
+                UnknownHostException.class, () -> NetUtils.matchIpRange("192.168.1.63", "192.168.1.256", 90));
+        assertTrue(thrown.getMessage().contains("192.168.1.256"));
     }
 
     @Test

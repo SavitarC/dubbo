@@ -19,22 +19,20 @@ package org.apache.dubbo.spring.boot.actuate.autoconfigure;
 import org.apache.dubbo.spring.boot.actuate.health.DubboHealthIndicator;
 import org.apache.dubbo.spring.boot.actuate.health.DubboHealthIndicatorProperties;
 
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * Dubbo {@link DubboHealthIndicator} Auto Configuration
  *
- * @see HealthIndicator
  * @since 2.7.0
  */
 @Configuration
-@ConditionalOnClass(name = {"org.springframework.boot.actuate.health.Health"})
+@Conditional(CompatibleHealthIndicatorCondition.class)
 @ConditionalOnProperty(
         name = {"management.health.dubbo.enabled", "dubbo.enabled"},
         matchIfMissing = true,

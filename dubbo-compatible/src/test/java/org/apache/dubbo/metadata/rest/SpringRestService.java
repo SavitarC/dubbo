@@ -75,7 +75,7 @@ public class SpringRestService implements RestService {
     }
 
     @Override
-    @PostMapping(value = "/request/body/map", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/request/body/map", produces = MediaType.APPLICATION_JSON_VALUE)
     public User requestBodyMap(@RequestBody Map<String, Object> data, @RequestParam("param") String param) {
         User user = new User();
         user.setId(((Integer) data.get("id")).longValue());
@@ -84,7 +84,7 @@ public class SpringRestService implements RestService {
         return user;
     }
 
-    @PostMapping(value = "/request/body/user", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/request/body/user", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Override
     public Map<String, Object> requestBodyUser(@RequestBody User user) {
         Map<String, Object> map = new HashMap<>();

@@ -125,4 +125,67 @@
 
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>spring-boot-before-4</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-spring-boot-before-4-sources</id>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <phase>generate-sources</phase>
+                <configuration>
+                  <sources>
+                    <source>src/spring-boot-before-4/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>spring-boot-4</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-health</artifactId>
+          <optional>true</optional>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-spring-boot-4-sources</id>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <phase>generate-sources</phase>
+                <configuration>
+                  <sources>
+                    <source>src/spring-boot-4/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

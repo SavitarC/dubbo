@@ -19,7 +19,9 @@ package org.apache.dubbo.common.utils;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,7 +41,7 @@ class ConcurrentHashMapUtilsTest {
     }
 
     @Test
-    @EnabledForJreRange(max = org.junit.jupiter.api.condition.JRE.JAVA_8)
+    @EnabledOnJre(JRE.JAVA_8)
     public void issue11986ForJava8Test() {
         // https://github.com/apache/dubbo/issues/11986
         final ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
@@ -54,7 +56,7 @@ class ConcurrentHashMapUtilsTest {
     }
 
     @Test
-    @EnabledForJreRange(min = org.junit.jupiter.api.condition.JRE.JAVA_9)
+    @DisabledOnJre(JRE.JAVA_8)
     public void issue11986ForJava17Test() {
         // https://github.com/apache/dubbo/issues/11986
         final ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
