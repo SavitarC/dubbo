@@ -52,7 +52,7 @@ import static org.apache.dubbo.spring.boot.util.DubboUtils.DUBBO_PREFIX;
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration",
-            "org.springframework.boot.actuate.autoconfigure.tracing.zipkin"
+            "org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration"
         })
 @ConditionalOnClass(Sender.class)
 @Import({
