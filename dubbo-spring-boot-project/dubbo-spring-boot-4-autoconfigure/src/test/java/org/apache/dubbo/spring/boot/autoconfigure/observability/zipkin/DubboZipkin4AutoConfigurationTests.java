@@ -25,6 +25,7 @@ import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -70,6 +71,15 @@ class DubboZipkin4AutoConfigurationTests {
                     assertThat(context).hasSingleBean(Sender.class);
                     assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
                 });
+    }
+
+    @Test
+    void shouldOrderAfterSpringBootZipkinAutoConfiguration() {
+        AutoConfiguration autoConfiguration =
+                DubboZipkin4AutoConfiguration.class.getAnnotation(AutoConfiguration.class);
+
+        assertThat(autoConfiguration.afterName())
+                .contains("org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration");
     }
 
     @Test

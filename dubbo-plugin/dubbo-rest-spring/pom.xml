@@ -26,6 +26,10 @@
 
   <artifactId>dubbo-rest-spring</artifactId>
 
+  <properties>
+    <spring-boot.source.dir>src/spring-boot-before-4/java</spring-boot.source.dir>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.dubbo</groupId>
@@ -113,6 +117,24 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-spring-boot-sources</id>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sources>
+                <source>${spring-boot.source.dir}</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -122,31 +144,15 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-spring-boot-before-4-sources</id>
-                <goals>
-                  <goal>add-source</goal>
-                </goals>
-                <phase>generate-sources</phase>
-                <configuration>
-                  <sources>
-                    <source>src/spring-boot-before-4/java</source>
-                  </sources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <spring-boot.source.dir>src/spring-boot-before-4/java</spring-boot.source.dir>
+      </properties>
     </profile>
     <profile>
       <id>spring-boot-4</id>
+      <properties>
+        <spring-boot.source.dir>src/spring-boot-4/java</spring-boot.source.dir>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>jakarta.servlet</groupId>
@@ -154,28 +160,6 @@
           <scope>provided</scope>
         </dependency>
       </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-spring-boot-4-sources</id>
-                <goals>
-                  <goal>add-source</goal>
-                </goals>
-                <phase>generate-sources</phase>
-                <configuration>
-                  <sources>
-                    <source>src/spring-boot-4/java</source>
-                  </sources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>rpc-rest-test</id>
