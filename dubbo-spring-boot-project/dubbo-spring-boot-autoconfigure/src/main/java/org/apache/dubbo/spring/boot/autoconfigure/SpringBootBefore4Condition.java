@@ -16,15 +16,13 @@
  */
 package org.apache.dubbo.spring.boot.autoconfigure;
 
-import org.springframework.boot.SpringBootVersion;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 public class SpringBootBefore4Condition implements Condition {
 
-    public static boolean IS_SPRING_BOOT_BEFORE_4 =
-            SpringBootVersion.getVersion().charAt(0) < '4';
+    public static boolean IS_SPRING_BOOT_BEFORE_4 = SpringBootVersionUtils.isBeforeSpringBoot4();
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {

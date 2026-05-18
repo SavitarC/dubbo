@@ -23,6 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -87,5 +88,18 @@ class DubboTriple4AutoConfigurationTests {
                         "dubbo.protocol.triple.servlet.enabled=true",
                         "dubbo.protocol.triple.servlet.max-concurrent-streams=10")
                 .run(context -> assertThat(context).hasSingleBean(WebServerFactoryCustomizer.class));
+    }
+
+    @Test
+    void shouldIgnoreTomcatHttp2CustomizerWhenTomcatIsNotPresent() {
+        this.contextRunner
+                .withClassLoader(new FilteredClassLoader("org.springframework.boot.tomcat", "org.apache.coyote"))
+                .withPropertyValues(
+                        "dubbo.protocol.triple.servlet.enabled=true",
+                        "dubbo.protocol.triple.servlet.max-concurrent-streams=10")
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class);
+                });
     }
 }

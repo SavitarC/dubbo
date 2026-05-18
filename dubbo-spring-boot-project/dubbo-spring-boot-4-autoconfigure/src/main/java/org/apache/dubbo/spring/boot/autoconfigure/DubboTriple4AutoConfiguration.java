@@ -63,22 +63,26 @@ public class DubboTriple4AutoConfiguration {
             return registrationBean;
         }
 
-        @Bean
-        @ConditionalOnClass(Http2Protocol.class)
+        @Configuration(proxyBeanMethods = false)
+        @ConditionalOnClass({ConfigurableTomcatWebServerFactory.class, Http2Protocol.class})
         @ConditionalOnProperty(prefix = SERVLET_PREFIX, name = "max-concurrent-streams")
-        public WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory> tripleTomcatHttp2Customizer(
-                @Value("${" + SERVLET_PREFIX + ".max-concurrent-streams}") int maxConcurrentStreams) {
-            return factory -> factory.addConnectorCustomizers(connector -> {
-                ProtocolHandler handler = connector.getProtocolHandler();
-                for (UpgradeProtocol upgradeProtocol : handler.findUpgradeProtocols()) {
-                    if (upgradeProtocol instanceof Http2Protocol) {
-                        Http2Protocol protocol = (Http2Protocol) upgradeProtocol;
-                        int value = maxConcurrentStreams <= 0 ? Integer.MAX_VALUE : maxConcurrentStreams;
-                        protocol.setMaxConcurrentStreams(value);
-                        protocol.setMaxConcurrentStreamExecution(value);
+        public static class TomcatHttp2Configuration {
+
+            @Bean
+            public WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory> tripleTomcatHttp2Customizer(
+                    @Value("${" + SERVLET_PREFIX + ".max-concurrent-streams}") int maxConcurrentStreams) {
+                return factory -> factory.addConnectorCustomizers(connector -> {
+                    ProtocolHandler handler = connector.getProtocolHandler();
+                    for (UpgradeProtocol upgradeProtocol : handler.findUpgradeProtocols()) {
+                        if (upgradeProtocol instanceof Http2Protocol) {
+                            Http2Protocol protocol = (Http2Protocol) upgradeProtocol;
+                            int value = maxConcurrentStreams <= 0 ? Integer.MAX_VALUE : maxConcurrentStreams;
+                            protocol.setMaxConcurrentStreams(value);
+                            protocol.setMaxConcurrentStreamExecution(value);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 

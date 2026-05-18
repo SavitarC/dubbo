@@ -48,4 +48,23 @@ class SpringBootConditionTests {
         Assertions.assertFalse(new SpringBootBefore4Condition().matches(null, null));
         Assertions.assertTrue(new SpringBoot4Condition().matches(null, null));
     }
+
+    @Test
+    void shouldParseSpringBootVersionsNullSafely() {
+        Assertions.assertTrue(SpringBootVersionUtils.getMajorVersion(null) < 0);
+        Assertions.assertTrue(SpringBootVersionUtils.getMajorVersion("") < 0);
+        Assertions.assertEquals(3, SpringBootVersionUtils.getMajorVersion("3.5.14"));
+        Assertions.assertEquals(4, SpringBootVersionUtils.getMajorVersion("4.0.6"));
+
+        Assertions.assertFalse(SpringBootVersionUtils.isSpringBoot4("3.5.14"));
+        Assertions.assertTrue(SpringBootVersionUtils.isBeforeSpringBoot4("3.5.14"));
+        Assertions.assertTrue(SpringBootVersionUtils.isSpringBoot4("4.0.6"));
+        Assertions.assertFalse(SpringBootVersionUtils.isBeforeSpringBoot4("4.0.6"));
+    }
+
+    @Test
+    void shouldEvaluateConditionsWhenSpringBootVersionIsUnavailable() {
+        Assertions.assertDoesNotThrow(() -> SpringBootVersionUtils.isSpringBoot4(null));
+        Assertions.assertDoesNotThrow(() -> SpringBootVersionUtils.isBeforeSpringBoot4(null));
+    }
 }
